@@ -82,7 +82,7 @@ public:
 	//Check if the Matrix is a square
 	bool issquare();
 
-	//check if the Matrix is a Zero
+	//check if the Matrix is all Zero
 	bool iszero();
 
 	// change rowm and rown
@@ -127,19 +127,20 @@ public:
 	Matrix eigen();
 
 	//calculate the stepped(?) Matrix
-	Matrix step(bool perfect = 0);
+	Matrix step();
 
 	//对角化
-	Matrix diagonalize(Matrix& m);
+	Matrix diagonalize();
 
 	//获取xy的值，保存在对象的xy中
 	xy getxy(xy xy_t, bool method = myvertical);
 
 	xy getxy(bool method = myvertical);
 	
-	//后向遍历，从xy_t向前找到最后一个非零的xy,保存在哪里？
-	//鉴于使用该函数一般都是在step函数之后，所以只找对角线的元素
+	//back_forward to search non-zero element
 	xy get_lastxy(xy xy_t);
+
+	xy get_lastxy();
 
 	//我也不知道是干什么的，可能是向上减的
 	Matrix upperize();

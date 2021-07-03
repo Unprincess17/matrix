@@ -60,14 +60,19 @@ bool Matrix::issquare()
 	return issqure;
 }
 
+//全0
 bool Matrix::iszero()
 {
 	if (row.size()==0) { cout << "未初始化的矩阵"; /*THere it should throw an exception*/exit(0); }
 	for (rowV::size_type i = 0; i != row.size(); ++i) {
+		int count = 0;
 		for (colV::size_type j = 0; j != row[0].size(); ++j) {
 			if (row[i][j] == 0 || abs(row[i][j]) < 1e-6) {
-				return true;
+				++count;
 			}
+		}
+		if (count == row.size() * row[0].size()) {
+			return true;
 		}
 	}
 	return false;//不是全0矩阵
@@ -335,7 +340,7 @@ Matrix Matrix::reverse()
 }
 
 //get stepped Matrix
-Matrix Matrix::step(bool perfect /*= 0*/)//perfect为1，则生成规则形状矩阵
+Matrix Matrix::step()
 {
 	Matrix mstep(row);
 	if (!mstep.iszero()) {
@@ -366,26 +371,66 @@ Matrix Matrix::eigen()
 }
 
 //TODO:
-Matrix Matrix::diagonalize(Matrix& m)
+Matrix Matrix::diagonalize()
 {
 
-	if (m.issquare()) {
-
+	if (issquare()) {
+		return step().upperize();
 	}
-	return Matrix();
+	else {
+		//throw a exception!
+		cout << "Not a square" << endl;
+		exit(0);
+	}
 }
 
-//后向遍历矩阵，并保存在一个xy型变量中
+//后向遍历，从xy_t向前找到最后一个非零的xy,保存在哪里？
+//鉴于使用该函数一般都是在step函数之后，所以只找对角线的元素
 xy Matrix::get_lastxy(xy xy_t)
 {
 	xy xy_r;
+	for (int i = min(xy_t.x,xy_t.y)-1; i != -1; --i) {
+		if (row[i][i] != 0 || abs(row[i][i] > 1e-6)) {
+			xy_r.x = xy_r.y = i;
+			return xy_r;
+		}
+	}
+	xy_r.x = xy_r.y = 0;
 	return xy_r;
 }
 
-//TODO:r*cé˜¶çŸ©é˜µçš„ä¸Šä¸‰è§’åŒ–
+xy Matrix::get_lastxy()
+{
+	xy xy_r;
+	for (int i = min(xyend.x, xyend.y); i != -1; --i) {
+		if (row[i][i] != 0 || abs(row[i][i] > 1e-6)) {
+			xy_r.x = xy_r.y = i;
+			return xy_r;
+		}
+	}
+	xy_r.x = xy_r.y = 0;
+	return xy_r;
+}
+
 Matrix Matrix::upperize()
 {
-	return Matrix();
+	Matrix upmatrix = step();
+	if (!upmatrix.iszero()) {
+		xy _xy = get_lastxy();
+		for (; (_xy.x != 0 && _xy.y != 0); _xy = upmatrix.get_lastxy(_xy)) {
+			for (rowV::size_type t = _xy.x - 1; t != -1; --t) {
+				if (upmatrix.row[t][_xy.y] != 0 || abs(upmatrix.row[t][_xy.y]) > 1e-6) {
+					double tmpt = upmatrix.row[t][_xy.y];
+					double tmpy = upmatrix.row[_xy.y][_xy.y];
+					upmatrix.multiRow(_xy.y, -(tmpt / tmpy));
+					upmatrix.addRow(t, _xy.y);
+					upmatrix.multiRow(_xy.y, -(tmpy / tmpt));
+				}
+			}
+		}
+		return upmatrix;
+	}
+	return upmatrix;
 }
 
 
@@ -393,7 +438,7 @@ Matrix Matrix::upperize()
 int Matrix::getRank() {
 	if (row.size()!= 0/*不是空矩阵*/) {
 		Matrix mstep = step();
-		int rank = xyend.x >= xyend.y ? xyend.x+1:xyend.y+1;
+		int rank = xyend.x <= xyend.y ? xyend.x+1:xyend.y+1;
 		for (int i = 0; i != row.size(); ++i) {//寻找使A(i，i)为零的元素，若没有，则返回
 			if (mstep.row[i][i] == 0) {//第i行的对角线为0，i取0,1,2...，那么秩应该取i，当对角线为最大值（假设为rownum-1，则返回rownum-1，
 				rank = i;
@@ -403,7 +448,6 @@ int Matrix::getRank() {
 	}
 }
 
-//é»˜è®¤åˆ—éåŽ†ï¼Œç”¨horizontalåˆ™è¡ŒéåŽ†
 xy Matrix::getxy(xy xy_t, bool method /*= vertical*/) {
 	xy _xy;
 
@@ -418,13 +462,12 @@ xy Matrix::getxy(xy xy_t, bool method /*= vertical*/) {
 				}
 			}
 		}
-		//è¿™é‡Œåº”è¯¥å‘å‡ºå¼‚å¸¸,ä½†æ˜¯ä¸çŸ¥é“æ€Žä¹ˆå¤„ç†	
 		_xy.x = xyend.x;
 		_xy.y = xyend.y;
 		return _xy;
 	}
 	else if (method == myhorizontal) {
-		if (row[0][0] != 0 || abs(row[0][0]) > (1 / 1024)) {
+		if (row[0][0] != 0 || abs(row[0][0]) > 1e-6) {
 			_xy.x = 0;
 			_xy.y = 0;
 			return _xy;
@@ -440,7 +483,6 @@ xy Matrix::getxy(xy xy_t, bool method /*= vertical*/) {
 					}
 				}
 			}
-			//è¿™é‡Œåº”è¯¥å‘å‡ºå¼‚å¸¸,ä½†æ˜¯ä¸çŸ¥é“æ€Žä¹ˆå¤„ç†	
 			_xy.x = 0;
 			_xy.y = 0;
 			return _xy;
