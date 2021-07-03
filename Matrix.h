@@ -127,7 +127,7 @@ public:
 	Matrix eigen();
 
 	//calculate the stepped(?) Matrix
-	Matrix step();
+	Matrix step(bool perfect = 0);
 
 	//对角化
 	Matrix diagonalize(Matrix& m);

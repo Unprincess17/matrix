@@ -62,14 +62,15 @@ bool Matrix::issquare()
 
 bool Matrix::iszero()
 {
+	if (row.size()==0) { cout << "未初始化的矩阵"; /*THere it should throw an exception*/exit(0); }
 	for (rowV::size_type i = 0; i != row.size(); ++i) {
 		for (colV::size_type j = 0; j != row[0].size(); ++j) {
-			if (row[i][j] == 0 || abs(row[i][j] < 1e-6)) {
-				return false;
+			if (row[i][j] == 0 || abs(row[i][j]) < 1e-6) {
+				return true;
 			}
 		}
 	}
-	return true;
+	return false;//不是全0矩阵
 }
 
 //Calculate the transpose matrix
@@ -101,7 +102,7 @@ Matrix Matrix::IMatrix() {
 	}
 };
 
-// Change row i and row j è®¡ç®—æœºä¸‹æ ‡
+// Change row i and row j
 void Matrix::changeRow(rowV::size_type i, rowV::size_type j)
 {
 	if (i != j) {
@@ -334,16 +335,12 @@ Matrix Matrix::reverse()
 }
 
 //get stepped Matrix
-Matrix Matrix::step()
+Matrix Matrix::step(bool perfect /*= 0*/)//perfect为1，则生成规则形状矩阵
 {
-	//1.åˆ—æŸ¥æ‰¾ç¬¬ä¸€ä¸ªä¸ä¸º0çš„å…ƒç´ ï¼Œè¿”å›žxy
-	//2.ç”¨è¿™ä¸ªå…ƒç´ å°†è¯¥åˆ—å…¶ä»–å…ƒç´ ç½®é›¶
-	//3.ç»§ç»­æŸ¥æ‰¾ä¸‹ä¸€ä¸ªä¸ä¸ºé›¶çš„å…ƒç´ 
-
-	//1.æ³¨æ„ï¼šç¬¬iè¡Œè¿”å›žçš„å…ƒç´ åº”è¯¥æ”¾åœ¨ç¬¬iåˆ—çš„ä½ç½®
 	Matrix mstep(row);
 	if (!mstep.iszero()) {
-		for (xy _xy = getxy(); (mstep.xyend.x != _xy.x && mstep.xyend.y != _xy.y); _xy = mstep.getxy(_xy)) {
+		xy _xy = getxy();
+		for (; (mstep.xyend.x != _xy.x && mstep.xyend.y != _xy.y); _xy = mstep.getxy(_xy)) {
 			mstep.changeRow(_xy.x, _xy.y);
 			for (rowV::size_type t = _xy.x + 1; t != mstep.row.size(); ++t) {
 				if (mstep.row[t][_xy.y] != 0 || abs(mstep.row[t][_xy.y]) > 1e-6) {
@@ -355,6 +352,7 @@ Matrix Matrix::step()
 				}
 			}
 		}
+		mstep.changeRow(_xy.x, _xy.y);
 	}
 	return mstep;
 
@@ -391,9 +389,9 @@ Matrix Matrix::upperize()
 }
 
 
-//æ±‚ç§©
+//getrank, how to solve irregular matice?
 int Matrix::getRank() {
-	if (row.size()!= 0) {
+	if (row.size()!= 0/*不是空矩阵*/) {
 		Matrix mstep = step();
 		int rank = xyend.x >= xyend.y ? xyend.x+1:xyend.y+1;
 		for (int i = 0; i != row.size(); ++i) {//寻找使A(i，i)为零的元素，若没有，则返回

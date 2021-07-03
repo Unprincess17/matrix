@@ -9,6 +9,5 @@ int main() {
 	Matrix m1 = Matrix(r1);
 	Matrix m2 = m1.step();
 	m2.show();
-	int tmp = m2.getRank();//there is something wrong, fuck!
 	cout << tmp<<endl;
 }
