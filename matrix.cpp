@@ -363,14 +363,6 @@ Matrix Matrix::step()
 
 }
 
-//TODO: 
-Matrix Matrix::eigen()
-{
-
-	return Matrix();
-}
-
-//TODO:
 Matrix Matrix::diagonalize()
 {
 
@@ -432,7 +424,6 @@ Matrix Matrix::upperize()
 	}
 	return upmatrix;
 }
-
 
 //getrank, how to solve irregular matice?
 int Matrix::getRank() {
@@ -506,3 +497,13 @@ xy Matrix::getxy(bool method /*= vertical*/) {
 	}
 }
 
+//TODO: how to solve expressions?
+Matrix Matrix::eigen()
+{
+	return Matrix();
+}
+
+//how to store element as unknown number?
+//firstly, they 'd be print as string, and count as double
+//for instance, if I 
+//

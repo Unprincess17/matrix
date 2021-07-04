@@ -139,7 +139,6 @@ public:
 	
 	//back_forward to search non-zero element
 	xy get_lastxy(xy xy_t);
-
 	xy get_lastxy();
 
 	//我也不知道是干什么的，可能是向上减的

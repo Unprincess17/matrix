@@ -141,9 +141,11 @@
   <ItemGroup>
     <ClCompile Include="matrix.cpp" />
     <ClCompile Include="show.cpp" />
+    <ClCompile Include="unknown.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Matrix.h" />
+    <ClInclude Include="unknown.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
